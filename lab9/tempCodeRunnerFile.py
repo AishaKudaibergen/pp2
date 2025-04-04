@@ -1,0 +1,1 @@
+background = pygame.image.load(r"C:\Users\kafka\Documents\Demo\lab8\r\PygameTutorial_3_0\AnimatedStreet.png")
