@@ -2,6 +2,9 @@ import pygame
 import time
 import random
 import sys
+from user_login import user_login
+from table import update_score_and_level
+
 
 # Initial game speed
 snake_speed = 10
@@ -38,7 +41,7 @@ food_types = {
 def generate_food():
     """Generate random food position ensuring it does not spawn on the snake or outside bounds."""
     while True:
-        position = [random.randrange(1, window_x // 10) * 10, random.randrange(1, window_y // 10) * 10]
+        position = [random.randrange(1, window_x // 10) * 10, random.randrange(6, window_y // 10) * 10]
         if position not in snake_body:
             food_type = random.choices(list(food_types.keys()), weights=[0.6, 0.3, 0.1])[0]  # Small: 60%, Medium: 30%, Large: 10%
             return position, food_type
@@ -52,8 +55,7 @@ direction = 'RIGHT'
 change_to = direction
 
 # Score and Level tracking
-score = 0
-level = 1
+username, score, level = user_login()
 
 def show_score_and_level(color, font, size):
     """Display score and level on the screen."""
@@ -64,6 +66,7 @@ def show_score_and_level(color, font, size):
     game_window.blit(level_surface, level_surface.get_rect(topright=(window_x - 10, 10)))
 
 def game_over():
+    update_score_and_level(username, score, level)
     font = pygame.font.SysFont('times new roman', 50)
     game_over_surface = font.render(f'Your Score: {score}', True, red)
     game_over_rect = game_over_surface.get_rect(center=(window_x/2, window_y/4))
@@ -80,6 +83,8 @@ def check_wall_collision():
 
 count = 0
 
+paused = False
+
 # Main game loop
 while True:
     for event in pygame.event.get():
@@ -95,6 +100,22 @@ while True:
                 change_to = 'LEFT'
             elif event.key == pygame.K_RIGHT:
                 change_to = 'RIGHT'
+            elif event.key == pygame.K_p:  # P for pausing
+                paused = True
+                font = pygame.font.SysFont('times new roman', 40)
+                pause_surface = font.render('Paused. Press "P" to continue.', True, white)
+                pause_rect = pause_surface.get_rect(center=(window_x/2, window_y/2))
+                game_window.blit(pause_surface, pause_rect)
+                pygame.display.flip()
+                while paused:
+                    for ev in pygame.event.get():
+                        if ev.type == pygame.KEYDOWN and ev.key == pygame.K_p:
+                            paused = False
+                        elif ev.type == pygame.QUIT:
+                            update_score_and_level(username, score, level)
+                            pygame.quit()
+                            sys.exit()
+
 
     # Validate direction change
     if change_to == 'UP' and direction != 'DOWN':
