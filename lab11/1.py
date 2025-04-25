@@ -132,7 +132,7 @@ def setup_database():
             ''')
     print("Database setup complete.")
 
-# Функция для поиска по шаблону
+#для поиска по шаблону
 def search_by_pattern(pattern):
     with connect() as conn:
         with conn.cursor() as cur:
@@ -141,16 +141,16 @@ def search_by_pattern(pattern):
             for row in results:
                 print(row)
 
-# Процедура для вставки или обновления пользователя
+#для вставки или обновления пользователя
 def insert_or_update_user(name, phone):
     with connect() as conn:
         with conn.cursor() as cur:
             # Используем CALL
             cur.execute("CALL insert_or_update_user(%s, %s)", (name, phone))
-            conn.commit()  # Важно для процедур
+            conn.commit()
     print("Operation completed.")
 
-# Процедура для вставки нескольких пользователей
+# для вставки нескольких пользователей
 def insert_many_users(names, phones):
     try:
         with connect() as conn:
@@ -162,7 +162,7 @@ def insert_many_users(names, phones):
                     print("Error: Names and phones count mismatch")
                     return
                 
-                # Создаем временную таблицу для результатов
+                # создаем временную таблицу
                 cur.execute("""
                     CREATE TEMP TABLE IF NOT EXISTS temp_invalid_data (
                         error TEXT,
@@ -172,13 +172,13 @@ def insert_many_users(names, phones):
                     TRUNCATE temp_invalid_data;
                 """)
                 
-                # Вызываем процедуру
+                #вызываем
                 cur.execute("""
                     CALL insert_many_users('invalid_data', %s::VARCHAR[], %s::VARCHAR[]);
                     FETCH ALL FROM invalid_data;
                 """, (names_list, phones_list))
                 
-                # Получаем результаты
+                #получаем результаты
                 invalid_data = cur.fetchall()
                 if invalid_data:
                     print("\nInvalid data found:")
@@ -193,7 +193,7 @@ def insert_many_users(names, phones):
         conn.rollback()
         print(f"Error: {e}")
 
-# Функция для пагинации
+#для пагинации
 def get_records_with_pagination(limit, offset):
     with connect() as conn:
         with conn.cursor() as cur:
@@ -202,7 +202,7 @@ def get_records_with_pagination(limit, offset):
             for row in results:
                 print(row)
 
-# Процедура для удаления пользователя
+# для удаления пользователя
 def delete_user(name=None, phone=None):
     if name is None and phone is None:
         print("Please provide either name or phone.")
@@ -210,7 +210,7 @@ def delete_user(name=None, phone=None):
     
     with connect() as conn:
         with conn.cursor() as cur:
-            # Используем CALL для процедуры 
+            # используем CALL
             if name and phone:
                 cur.execute("CALL delete_user(%s, %s)", (name, phone))
             elif name:
@@ -220,7 +220,7 @@ def delete_user(name=None, phone=None):
             conn.commit() 
     print("Deletion completed.")
 
-# Главное меню
+# Главная
 def menu():
     setup_database()
     while True:

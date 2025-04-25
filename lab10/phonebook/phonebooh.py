@@ -1,7 +1,7 @@
 import psycopg2
 import csv
 
-# Подключение к базе данных
+# подключение к бд
 def connect():
     return psycopg2.connect(
     host='localhost', #по умолчанию
@@ -10,7 +10,7 @@ def connect():
     password = 'aishooma*007'
 )
 
-# Создание таблицы
+#создание табл
 def create_table():
     with connect() as conn:
         with conn.cursor() as cur:
@@ -85,7 +85,7 @@ def delete_user(name):
             cur.execute("DELETE FROM phonebook WHERE name = %s", (name,))
     print("Deleted!")
 
-# Главное меню
+# Главная
 def menu():
     create_table()
     while True:
